@@ -1,0 +1,48 @@
+# Maven
+# Build your Java project and run tests with Apache Maven.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/java
+
+trigger:
+- master
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: Maven@3
+  inputs:
+    mavenPomFile: 'pom.xml'
+    mavenOptions: '-Xmx3072m'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '23' # Asegúrate de usar la versión correcta de Java
+    jdkArchitectureOption: 'x64'
+    publishJUnitResults: true
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    goals: 'package'
+
+- task: CopyFiles@2
+  displayName: 'Copiar archivo JAR'
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)/target'
+    Contents: '*.jar'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publicar artefacto JAR'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
+
+- task: AzureWebApp@1
+  displayName: 'Desplegar en Azure App Service'
+  inputs:
+    azureSubscription: 'pagoclinica' # Reemplaza con el nombre de tu conexión de servicio
+    appName: 'pagoclinica-c8gnffgcd2dzdnfh.canadacentral-01.azurewebsites.net'      # Reemplaza con el nombre de tu App Service
+    package: '$(Pipeline.Workspace)/drop/*.jar'
+    startupCommand: 'java -jar $(Pipeline.Workspace)/drop/*.jar' # Comando para ejecutar el JAR
+    appSettings: |
+      SPRING_DATASOURCE_URL: jdbc:mysql://pagoclinica-server.mysql.database.azure.com:3306/pagoclinica?useSSL=true
+      SPRING_DATASOURCE_USERNAME: ytfjfziwia
+      SPRING_DATASOURCE_PASSWORD: San123-1
