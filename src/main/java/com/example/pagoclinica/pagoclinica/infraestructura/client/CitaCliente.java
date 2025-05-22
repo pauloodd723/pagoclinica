@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.example.pagoclinica.pagoclinica.domain.dto.CitaDTO;
-import com.example.pagoclinica.pagoclinica.domain.dto.EstadoCitaRequestDTO; // Nueva importación
+import com.example.pagoclinica.pagoclinica.domain.dto.EstadoCitaRequestDTO;
 
-import java.util.List; // Nueva importación
+import java.util.List; 
 
 @FeignClient(name = "appointment-client", url = "https://citaspoo-production.up.railway.app")
 public interface CitaCliente {

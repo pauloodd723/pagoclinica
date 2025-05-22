@@ -6,8 +6,8 @@ import com.example.pagoclinica.pagoclinica.infraestructura.crud.PagoRepository;
 import com.example.pagoclinica.pagoclinica.infraestructura.entity.PagoClinica;
 import com.example.pagoclinica.pagoclinica.infraestructura.mapper.PagoClinicaMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository; // Cambiado a @Repository ya que es una implementación de repositorio
-// Aunque @Service también funciona para la inyección de dependencias.
+import org.springframework.stereotype.Repository; 
+
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Repository // Es más semántico usar @Repository para clases de acceso a datos
+@Repository 
 public class PayClinicalImpl implements IPayClinical {
 
     private final PagoRepository pagoRepository;
@@ -31,8 +31,7 @@ public class PayClinicalImpl implements IPayClinical {
     @Override
     public PagoDTO registrarPago(PagoDTO pagoDTO) {
         PagoClinica pagoClinica = pagoClinicaMapper.toPagoClinica(pagoDTO);
-        // Se podría establecer la fecha de pago aquí si no viene en el DTO
-        // pagoClinica.setFechaPago(LocalDate.now());
+
         PagoClinica pagoGuardado = pagoRepository.save(pagoClinica);
         return pagoClinicaMapper.toPayClinicalDTO(pagoGuardado);
     }
@@ -60,7 +59,7 @@ public class PayClinicalImpl implements IPayClinical {
 
     @Override
     public List<PagoDTO> obtenerPagosPendientes() {
-        return pagoRepository.findByEstado("Pendiente").stream() // Asumiendo que "Pendiente" es el estado
+        return pagoRepository.findByEstado("Pendiente").stream() 
                 .map(pagoClinicaMapper::toPayClinicalDTO)
                 .collect(Collectors.toList());
     }
@@ -84,7 +83,7 @@ public class PayClinicalImpl implements IPayClinical {
         StringBuilder reporte = new StringBuilder("--- Reporte de Ingresos ---\n\n");
         LocalDate hoy = LocalDate.now();
         BigDecimal totalHoy = obtenerTotalIngresosPorFecha(hoy);
-        if (totalHoy == null) totalHoy = BigDecimal.ZERO; // Manejar nulos
+        if (totalHoy == null) totalHoy = BigDecimal.ZERO; 
         reporte.append("Total de ingresos el ").append(hoy).append(": $").append(totalHoy).append("\n");
 
         Map<String, Long> metodosMasUsados = obtenerMetodosPagoMasUsados();
@@ -99,15 +98,12 @@ public class PayClinicalImpl implements IPayClinical {
         return reporte.toString();
     }
 
-    // Implementación de los nuevos métodos
+
     @Override
     public PagoDTO actualizarPago(Long id, PagoDTO pagoDTO) {
         Optional<PagoClinica> pagoExistenteOptional = pagoRepository.findById(id);
         if (pagoExistenteOptional.isPresent()) {
             PagoClinica pagoExistente = pagoExistenteOptional.get();
-            // Actualiza los campos necesarios. Evita actualizar el ID.
-            // Puedes usar el mapper para esto o hacerlo manualmente.
-            // Aquí un ejemplo manual para control granular:
             pagoExistente.setCitaId(pagoDTO.getCitaId());
             pagoExistente.setPacienteId(pagoDTO.getPacienteId());
             pagoExistente.setFechaPago(pagoDTO.getFechaPago());
@@ -118,7 +114,7 @@ public class PayClinicalImpl implements IPayClinical {
             PagoClinica pagoActualizado = pagoRepository.save(pagoExistente);
             return pagoClinicaMapper.toPayClinicalDTO(pagoActualizado);
         } else {
-            return null; // O lanzar una excepción personalizada
+            return null; 
         }
     }
 
@@ -127,8 +123,6 @@ public class PayClinicalImpl implements IPayClinical {
         if (pagoRepository.existsById(id)) {
             pagoRepository.deleteById(id);
         } else {
-            // Opcional: lanzar una excepción si el elemento no existe
-            // throw new RuntimeException("Pago no encontrado con id: " + id);
         }
     }
 
@@ -138,12 +132,12 @@ public class PayClinicalImpl implements IPayClinical {
         if (pagoOptional.isPresent()) {
             PagoClinica pagoAProcesar = pagoOptional.get();
             pagoAProcesar.setMetodoPago(metodoPago);
-            pagoAProcesar.setEstado("Pagado"); // O el estado que corresponda
-            pagoAProcesar.setFechaPago(LocalDate.now()); // Actualizar fecha al momento del pago
+            pagoAProcesar.setEstado("Pagado");
+            pagoAProcesar.setFechaPago(LocalDate.now());
             PagoClinica pagoProcesado = pagoRepository.save(pagoAProcesar);
             return pagoClinicaMapper.toPayClinicalDTO(pagoProcesado);
         } else {
-            return null; // O lanzar una excepción
+            return null;
         }
     }
 }

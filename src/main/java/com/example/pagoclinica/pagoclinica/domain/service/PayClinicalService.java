@@ -102,10 +102,7 @@ public class PayClinicalService {
     }
 
     public PagoDTO actualizarPago(Long id, PagoDTO payClinicalDTO) {
-        // Similar a registrarPago, podrías añadir verificaciones para citaId y pacienteId si se permite su modificación
-        // y si vienen en el DTO.
-        // Por ahora, se asume que PayClinicalImpl maneja la lógica de actualización.
-        // Si payClinicalDTO.getCitaId() o payClinicalDTO.getPacienteId() pueden cambiar y necesitan validación:
+
         try {
             if (payClinicalDTO.getCitaId() != null) {
                 CitaDTO cita = citaCliente.getAppointmentById(payClinicalDTO.getCitaId());
@@ -124,15 +121,9 @@ public class PayClinicalService {
     }
 
     public boolean eliminarPago(Long id) {
-        // La implementación del repositorio podría devolver void o boolean.
-        // PayClinicalImpl.eliminarPago actualmente es void.
-        // Para que este método devuelva boolean correctamente, PayClinicalImpl.eliminarPago
-        // debería lanzar una excepción si el pago no se encuentra, y aquí la capturaríamos.
+
         try {
-            pagoClinicaImpl.eliminarPago(id); // Asumiendo que si no lo encuentra, no lanza error, o lanza un error específico
-            // Para confirmar que fue eliminado, podríamos intentar obtenerlo después:
-            // return pagoClinicaImpl.obtenerPagoPorId(id) == null;
-            // O, si PayClinicalImpl.eliminarPago lanzara una EntityNotFoundException:
+            pagoClinicaImpl.eliminarPago(id);  
             return true;
         } catch (Exception e) {
 
@@ -154,7 +145,7 @@ public class PayClinicalService {
         return pagoProcesado;
     }
 
-    // --- Métodos para Citas Externas ---
+
     public List<CitaDTO> obtenerTodasLasCitasExternas() {
         try {
             return citaCliente.getAllAppointments();
@@ -183,8 +174,8 @@ public class PayClinicalService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Estado '" + nuevoEstado + "' no válido. Los estados permitidos son 'Pagado', 'Anulado', 'Pendiente'.");
         }
         try {
-            CitaDTO citaExistente = citaCliente.getAppointmentById(citaId); // Verifica primero que exista
-             if (citaExistente == null) { // Aunque Feign debería lanzar NotFoundException
+            CitaDTO citaExistente = citaCliente.getAppointmentById(citaId); 
+             if (citaExistente == null) { 
                  throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontró la cita con ID: " + citaId + " para actualizar.");
             }
             return citaCliente.updateAppointmentStatus(citaId, estadoRequest);
@@ -195,7 +186,7 @@ public class PayClinicalService {
         }
     }
 
-    // --- Métodos para Pacientes Externos ---
+
     public List<PacienteDTO> obtenerTodosLosPacientesExternos() {
         try {
             return pacienteCliente.getAllPacientes();

@@ -3,7 +3,7 @@ package com.example.pagoclinica.pagoclinica.controller;
 import com.example.pagoclinica.pagoclinica.domain.dto.CitaDTO;
 import com.example.pagoclinica.pagoclinica.domain.dto.EstadoCitaRequestDTO;
 import com.example.pagoclinica.pagoclinica.domain.dto.PagoDTO;
-import com.example.pagoclinica.pagoclinica.domain.dto.PacienteDTO; // Nueva importación
+import com.example.pagoclinica.pagoclinica.domain.dto.PacienteDTO; 
 import com.example.pagoclinica.pagoclinica.domain.service.PayClinicalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,14 +14,12 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/pagos") // Base path general
+@RequestMapping("/pagos") 
 public class PagoClinicaController {
 
     @Autowired
     private PayClinicalService payClinicalService;
 
-    // --- Endpoints de Pagos (ya existentes) ---
-    // ... (tus endpoints de /pagos, /{id}, /{id}/pagar, etc. permanecen igual) ...
     @GetMapping
     public ResponseEntity<List<PagoDTO>> obtenerTodosLosPagos() {
         return ResponseEntity.ok(payClinicalService.obtenerTodosLosPagos());
